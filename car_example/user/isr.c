@@ -55,22 +55,22 @@ void USART1_IRQHandler(void)
 				{
 					case 'W':
 						if(current_mode == MODE_VISION)
-							motor_direct_set(20000, 20000);
+							motor_target_set(DEFAULT_SPEED, DEFAULT_SPEED);
 						break;
 					case 'S':
 						if(current_mode == MODE_VISION)
-							motor_direct_set(-20000, -20000);
+							motor_target_set(-DEFAULT_SPEED, -DEFAULT_SPEED);
 						break;
 					case 'A':
 						if(current_mode == MODE_VISION)
-							motor_direct_set(-15000, 15000);
+							motor_target_set(-DEFAULT_SPEED, DEFAULT_SPEED);
 						break;
 					case 'D':
 						if(current_mode == MODE_VISION)
-							motor_direct_set(15000, -15000);
+							motor_target_set(DEFAULT_SPEED, -DEFAULT_SPEED);
 						break;
 					case 'X':
-						motor_direct_set(0, 0);
+						motor_target_set(0, 0);
 						break;
 					case 'E':
 						emergency_stop();

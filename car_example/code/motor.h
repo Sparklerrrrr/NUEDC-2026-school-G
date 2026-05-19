@@ -10,7 +10,6 @@ void motor_init(void);
 void motorA_duty(int duty);
 void motorB_duty(int duty);
 void encoder_init(void);
-void motor_target_set(int spe1, int spe2);
 void motor_control(int left_speed, int right_speed);
 void motor_direct_set(int left_duty, int right_duty);
 void emergency_stop(void);

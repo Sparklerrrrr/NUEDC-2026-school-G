@@ -7,7 +7,7 @@ volatile float line_kp = 2000.0f;
 volatile float line_kd = 800.0f;
 
 volatile ControlMode current_mode = MODE_IDLE;
-volatile uint8_t use_pid_speed = 0;
+volatile uint8_t use_pid_speed = 1;
 
 volatile uint32_t system_tick = 0;
 
@@ -123,7 +123,7 @@ void pid_control(void)
 void set_current_mode(int mode)
 {
 	current_mode = (ControlMode)mode;
-	if(mode == MODE_IDLE || mode == MODE_BASIC)
+	if(mode == MODE_IDLE || mode == MODE_BASIC || mode == MODE_VISION)
 	{
 		lap_count = 0;
 		lap_distance = 0;
@@ -131,6 +131,12 @@ void set_current_mode(int mode)
 		run_start_tick = system_tick;
 		last_track_error = 0;
 		lost_line_count = 0;
+		motorA.out = 0;
+		motorB.out = 0;
+		motorA.iout = 0;
+		motorB.iout = 0;
+		motorA.error[0] = 0; motorA.error[1] = 0; motorA.error[2] = 0;
+		motorB.error[0] = 0; motorB.error[1] = 0; motorB.error[2] = 0;
 	}
 	if(mode == MODE_IDLE)
 	{

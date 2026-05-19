@@ -6,8 +6,38 @@ static uint8_t display_counter = 0;
 static uint8_t last_poker_flag = 0;
 static char poker_display_buf[17];
 
+static volatile uint8_t led_blink_step = 0;
+static volatile uint32_t led_blink_next_tick = 0;
+
 static const char *suit_names[] = {"", "S", "H", "D", "C", "JK", "JK"};
 static const char *rank_names[] = {"", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
+
+static void led_blink_update(void)
+{
+	if(led_blink_step == 0)
+		return;
+
+	if(system_tick < led_blink_next_tick)
+		return;
+
+	switch(led_blink_step)
+	{
+		case 1:
+			led_off();
+			led_blink_next_tick = system_tick + 5;
+			led_blink_step = 2;
+			break;
+		case 2:
+			led_on();
+			led_blink_next_tick = system_tick + 20;
+			led_blink_step = 3;
+			break;
+		case 3:
+			led_off();
+			led_blink_step = 0;
+			break;
+	}
+}
 
 void check_lap(void)
 {
@@ -25,12 +55,8 @@ void check_lap(void)
 		buzzer_end_tick = system_tick + 50;
 
 		led_on();
-		for(volatile int i = 0; i < 200000; i++);
-		led_off();
-		for(volatile int i = 0; i < 100000; i++);
-		led_on();
-		for(volatile int i = 0; i < 200000; i++);
-		led_off();
+		led_blink_next_tick = system_tick + 20;
+		led_blink_step = 1;
 
 		if(current_mode == MODE_BASIC)
 			target_laps = LAPS_BASIC;
@@ -39,10 +65,12 @@ void check_lap(void)
 
 		if(lap_count >= target_laps)
 		{
-			motor_direct_set(0, 0);
+			motor_target_set(0, 0);
 			current_mode = MODE_IDLE;
 		}
 	}
+
+	led_blink_update();
 }
 
 void update_display(void)
@@ -97,10 +125,11 @@ int main(void)
 {
 	motor_init();
 	encoder_init();
+	gray_init();
 	uart_init(UART_1, 115200, 0);
 
-	pid_init(&motorA, DELTA_PID, 10, 10, 5);
-	pid_init(&motorB, DELTA_PID, 10, 10, 5);
+	pid_init(&motorA, POSITION_PID, 500, 50, 100);
+	pid_init(&motorB, POSITION_PID, 500, 50, 100);
 
 	OLED_Init();
 	buzzer_init();
@@ -125,7 +154,7 @@ int main(void)
 		switch(current_mode)
 		{
 			case MODE_IDLE:
-				motor_direct_set(0, 0);
+				motor_target_set(0, 0);
 				break;
 
 			case MODE_BASIC:

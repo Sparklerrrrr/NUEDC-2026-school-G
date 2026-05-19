@@ -46,31 +46,6 @@ void encoder_init(void)
 	gpio_init(GPIO_A, Pin_5, IU);
 }
 
-void motor_target_set(int spe1, int spe2)
-{
-	if(spe1 >= 0)
-	{
-		motorA_dir = 1;
-		motorA.target = spe1;
-	}
-	else
-	{
-		motorA_dir = 0;
-		motorA.target = -spe1;
-	}
-
-	if(spe2 >= 0)
-	{
-		motorB_dir = 1;
-		motorB.target = spe2;
-	}
-	else
-	{
-		motorB_dir = 0;
-		motorB.target = -spe2;
-	}
-}
-
 void motor_control(int left_speed, int right_speed)
 {
 	motor_target_set(left_speed, right_speed);
@@ -107,6 +82,10 @@ void emergency_stop(void)
 	motorB_duty(0);
 	motorA.target = 0;
 	motorB.target = 0;
+	motorA.out = 0;
+	motorB.out = 0;
+	motorA.iout = 0;
+	motorB.iout = 0;
 }
 
 float get_total_distance(void)

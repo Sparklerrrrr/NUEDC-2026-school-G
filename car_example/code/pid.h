@@ -57,4 +57,8 @@ extern volatile uint8_t poker_new_flag;
 #define LAPS_BASIC              2
 #define LAPS_VISION             1
 
+#define BASE_SPEED              80
+#define MIN_SPEED               30
+#define CURVE_DECEL_FACTOR      5
+
 #endif

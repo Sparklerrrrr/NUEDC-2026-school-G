@@ -2,8 +2,9 @@
 
 volatile int last_track_error = 0;
 volatile int lost_line_count = 0;
+volatile uint8_t poker_crossing = 0;
 
-static const int track_weights[8] = {-7, -5, -3, -1, 1, 3, 5, 7};
+static const int track_weights[SENSOR_COUNT] = {-7, -5, -3, -1, 1, 3, 5, 7};
 
 void gray_init(void)
 {
@@ -17,12 +18,23 @@ void gray_init(void)
 	gpio_init(GPIO_C, Pin_15, IU);
 }
 
+int get_active_sensor_count(void)
+{
+	int count = 0;
+	for(int i = 0; i < SENSOR_COUNT; i++)
+	{
+		if(digtal(i + 1) == 0)
+			count++;
+	}
+	return count;
+}
+
 int get_track_error(void)
 {
 	int weighted_sum = 0;
 	int active_count = 0;
 
-	for(int i = 0; i < 8; i++)
+	for(int i = 0; i < SENSOR_COUNT; i++)
 	{
 		if(digtal(i + 1) == 0)
 		{
@@ -40,40 +52,59 @@ int get_track_error(void)
 void track_pid(void)
 {
 	int error = get_track_error();
-	int base_duty = 20000;
-	int correction;
+	int base_speed = BASE_SPEED;
+	int curve_speed;
+	int left_speed, right_speed;
+	int abs_error;
 
 	if(error == LINE_LOST)
 	{
 		lost_line_count++;
-		if(lost_line_count > 100)
+
+		if(lost_line_count <= POKER_LOST_THRESHOLD)
 		{
-			motor_direct_set(8000, 8000);
+			motor_target_set(base_speed, base_speed);
 			return;
 		}
+
+		if(lost_line_count > REAL_LOST_THRESHOLD)
+		{
+			motor_target_set(MIN_SPEED, MIN_SPEED);
+			return;
+		}
+
 		if(last_track_error < 0)
-			motor_direct_set(5000, 20000);
+			motor_target_set(MIN_SPEED, base_speed);
 		else if(last_track_error > 0)
-			motor_direct_set(20000, 5000);
+			motor_target_set(base_speed, MIN_SPEED);
 		else
-			motor_direct_set(base_duty, base_duty);
+			motor_target_set(base_speed, base_speed);
 		return;
 	}
 
+	poker_crossing = 0;
 	lost_line_count = 0;
 
-	correction = line_kp * error + line_kd * (error - last_track_error);
+	abs_error = error < 0 ? -error : error;
+	curve_speed = base_speed - abs_error * CURVE_DECEL_FACTOR;
+	if(curve_speed < MIN_SPEED) curve_speed = MIN_SPEED;
+
+	if(error < 0)
+	{
+		left_speed = curve_speed + error * 3;
+		right_speed = curve_speed - error * 3;
+	}
+	else
+	{
+		left_speed = curve_speed - error * 3;
+		right_speed = curve_speed + error * 3;
+	}
+
+	if(left_speed < MIN_SPEED) left_speed = MIN_SPEED;
+	if(right_speed < MIN_SPEED) right_speed = MIN_SPEED;
+
 	last_track_error = error;
-
-	int left_duty = base_duty - correction;
-	int right_duty = base_duty + correction;
-
-	if(left_duty > 45000) left_duty = 45000;
-	if(left_duty < 0) left_duty = 0;
-	if(right_duty > 45000) right_duty = 45000;
-	if(right_duty < 0) right_duty = 0;
-
-	motor_direct_set(left_duty, right_duty);
+	motor_target_set(left_speed, right_speed);
 }
 
 void track(void)
