@@ -5,6 +5,7 @@
 ".\objects\pid.o"
 ".\objects\gray_track.o"
 ".\objects\filter.o"
+".\objects\buzzer.o"
 ".\objects\system_stm32f10x.o"
 ".\objects\startup_stm32f10x_md.o"
 ".\objects\ml_gpio.o"

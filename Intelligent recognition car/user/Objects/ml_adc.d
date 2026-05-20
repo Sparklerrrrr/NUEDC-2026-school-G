@@ -2,11 +2,12 @@
 .\objects\ml_adc.o: ..\ML_LIBS\headfile.h
 .\objects\ml_adc.o: ..\sys\stm32f10x.h
 .\objects\ml_adc.o: ..\sys\core_cm3.h
-.\objects\ml_adc.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\ml_adc.o: E:\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\ml_adc.o: ..\sys\system_stm32f10x.h
-.\objects\ml_adc.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
-.\objects\ml_adc.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
-.\objects\ml_adc.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
+.\objects\ml_adc.o: E:\Keil5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\ml_adc.o: E:\Keil5\ARM\ARMCC\Bin\..\include\string.h
+.\objects\ml_adc.o: E:\Keil5\ARM\ARMCC\Bin\..\include\math.h
+.\objects\ml_adc.o: E:\Keil5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\objects\ml_adc.o: ..\ML_LIBS\ml_uart.h
 .\objects\ml_adc.o: ..\ML_LIBS\headfile.h
 .\objects\ml_adc.o: ..\ML_LIBS\ml_tim.h
@@ -24,3 +25,4 @@
 .\objects\ml_adc.o: ..\code\pid.h
 .\objects\ml_adc.o: ..\code\gray_track.h
 .\objects\ml_adc.o: ..\code\filter.h
+.\objects\ml_adc.o: ..\code\buzzer.h

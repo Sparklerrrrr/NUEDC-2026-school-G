@@ -1,12 +1,14 @@
 .\objects\gray_track.o: ..\code\gray_track.c
+.\objects\gray_track.o: ..\code\gray_track.h
 .\objects\gray_track.o: ..\ml_libs\headfile.h
 .\objects\gray_track.o: ..\sys\stm32f10x.h
 .\objects\gray_track.o: ..\sys\core_cm3.h
-.\objects\gray_track.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\gray_track.o: E:\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\gray_track.o: ..\sys\system_stm32f10x.h
-.\objects\gray_track.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
-.\objects\gray_track.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
-.\objects\gray_track.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
+.\objects\gray_track.o: E:\Keil5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\gray_track.o: E:\Keil5\ARM\ARMCC\Bin\..\include\string.h
+.\objects\gray_track.o: E:\Keil5\ARM\ARMCC\Bin\..\include\math.h
+.\objects\gray_track.o: E:\Keil5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\objects\gray_track.o: ..\ml_libs\ml_uart.h
 .\objects\gray_track.o: ..\ml_libs\headfile.h
 .\objects\gray_track.o: ..\ml_libs\ml_tim.h
@@ -24,3 +26,4 @@
 .\objects\gray_track.o: ..\code\pid.h
 .\objects\gray_track.o: ..\code\gray_track.h
 .\objects\gray_track.o: ..\code\filter.h
+.\objects\gray_track.o: ..\code\buzzer.h

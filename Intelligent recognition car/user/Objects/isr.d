@@ -1,12 +1,13 @@
 .\objects\isr.o: isr.c
 .\objects\isr.o: ..\sys\stm32f10x.h
 .\objects\isr.o: ..\sys\core_cm3.h
-.\objects\isr.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\isr.o: E:\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\isr.o: ..\sys\system_stm32f10x.h
 .\objects\isr.o: ..\ml_libs\headfile.h
-.\objects\isr.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
-.\objects\isr.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
-.\objects\isr.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
+.\objects\isr.o: E:\Keil5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\isr.o: E:\Keil5\ARM\ARMCC\Bin\..\include\string.h
+.\objects\isr.o: E:\Keil5\ARM\ARMCC\Bin\..\include\math.h
+.\objects\isr.o: E:\Keil5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\objects\isr.o: ..\ml_libs\ml_uart.h
 .\objects\isr.o: ..\ml_libs\headfile.h
 .\objects\isr.o: ..\ml_libs\ml_tim.h
@@ -24,3 +25,4 @@
 .\objects\isr.o: ..\code\pid.h
 .\objects\isr.o: ..\code\gray_track.h
 .\objects\isr.o: ..\code\filter.h
+.\objects\isr.o: ..\code\buzzer.h

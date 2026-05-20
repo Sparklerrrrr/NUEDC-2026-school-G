@@ -1,12 +1,14 @@
 .\objects\pid.o: ..\code\pid.c
+.\objects\pid.o: ..\code\pid.h
 .\objects\pid.o: ..\ml_libs\headfile.h
 .\objects\pid.o: ..\sys\stm32f10x.h
 .\objects\pid.o: ..\sys\core_cm3.h
-.\objects\pid.o: D:\keil\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\pid.o: E:\Keil5\ARM\ARMCC\Bin\..\include\stdint.h
 .\objects\pid.o: ..\sys\system_stm32f10x.h
-.\objects\pid.o: D:\keil\ARM\ARMCC\Bin\..\include\stdio.h
-.\objects\pid.o: D:\keil\ARM\ARMCC\Bin\..\include\string.h
-.\objects\pid.o: D:\keil\ARM\ARMCC\Bin\..\include\math.h
+.\objects\pid.o: E:\Keil5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\pid.o: E:\Keil5\ARM\ARMCC\Bin\..\include\string.h
+.\objects\pid.o: E:\Keil5\ARM\ARMCC\Bin\..\include\math.h
+.\objects\pid.o: E:\Keil5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\objects\pid.o: ..\ml_libs\ml_uart.h
 .\objects\pid.o: ..\ml_libs\headfile.h
 .\objects\pid.o: ..\ml_libs\ml_tim.h
@@ -24,3 +26,4 @@
 .\objects\pid.o: ..\code\pid.h
 .\objects\pid.o: ..\code\gray_track.h
 .\objects\pid.o: ..\code\filter.h
+.\objects\pid.o: ..\code\buzzer.h
