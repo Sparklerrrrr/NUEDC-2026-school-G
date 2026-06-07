@@ -13,7 +13,7 @@ void I2C_Init()
 	SCL_Output(1);
 }
 
-// ÆğÊ¼ĞÅºÅ
+// èµ·å§‹ä¿¡å·
 void I2C_Start()
 {
 	SDA_Output(1);
@@ -22,7 +22,7 @@ void I2C_Start()
 	SCL_Output(0);
 }
 
-// ÖÕÖ¹ĞÅºÅ 
+// ç»ˆæ­¢ä¿¡å· 
 void I2C_Stop()
 {
 	SDA_Output(0);
@@ -30,7 +30,7 @@ void I2C_Stop()
 	SDA_Output(1);
 }
 
-// Ö÷»ú·¢ËÍÒ»¸ö×Ö½Ú
+// ä¸»æœºå‘é€ä¸€ä¸ªå­—èŠ‚
 void I2C_SendByte(uint8_t byte)
 {
 	for(int i = 0; i < 8; i++)
@@ -44,7 +44,7 @@ void I2C_SendByte(uint8_t byte)
 	}
 }
 
-// Ö÷»ú½ÓÊÕÒ»¸ö×Ö½Ú
+// ä¸»æœºæ¥æ”¶ä¸€ä¸ªå­—èŠ‚
 uint8_t I2C_ReceiveByte()
 {
 	uint8_t byte = 0;
@@ -60,7 +60,7 @@ uint8_t I2C_ReceiveByte()
 	return byte;
 }
 
-// Ö÷»úÓ¦´ğ 
+// ä¸»æœºåº”ç­” 
 void I2C_SendAck()
 {
 	SDA_Output(0);
@@ -68,7 +68,7 @@ void I2C_SendAck()
 	SCL_Output(0);
 }
 
-// Ö÷»ú²»Ó¦´ğ 
+// ä¸»æœºä¸åº”ç­” 
 void I2C_NotSendAck()
 {
 	SDA_Output(1);
@@ -76,7 +76,7 @@ void I2C_NotSendAck()
 	SCL_Output(0);
 }
 
-// µÈ´ı´Ó»úÓ¦´ğ 
+// ç­‰å¾…ä»æœºåº”ç­” 
 uint8_t I2C_WaitAck()
 {
 	uint8_t byte = 0;

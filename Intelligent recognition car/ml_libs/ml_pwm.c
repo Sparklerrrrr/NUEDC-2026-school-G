@@ -1,10 +1,10 @@
 #include "headfile.h"
 
 //-------------------------------------------------------------------------------------------------------------------
-// @brief		PWMÒý½Å³õÊ¼»¯
-// @param	  timn_chn		Ñ¡Ôñ¶¨Ê±Æ÷Í¨µÀ
-// @return		void  
-// Sample usage:	pwm_pin_init(timn_chn);  ÄÚ²¿µ÷ÓÃ ÎÞÐèÊÖ¶¯µ÷ÓÃ
+// @brief		PWMå¼•è„šåˆå§‹åŒ–
+// @param	  timn_chn		é€‰æ‹©å®šæ—¶å™¨é€šé“
+// @return		void
+// Sample usage:	pwm_pin_init(timn_chn);  å†…éƒ¨ä½¿ç”¨ å‹¿å¤–éƒ¨è°ƒç”¨
 //-------------------------------------------------------------------------------------------------------------------
 void pwm_pin_init(TIMn_CHn_enum timn_chn)
 {
@@ -50,88 +50,88 @@ void pwm_pin_init(TIMn_CHn_enum timn_chn)
 		}
 }
 
- 
+
 
 //-------------------------------------------------------------------------------------------------------------------
-// @brief		PWM³õÊ¼»¯
-// @param	  timn		Ñ¡Ôñ¶¨Ê±Æ÷(¿ÉÑ¡ÓÃµÄ¶¨Ê±Æ÷²Î¿¼ml_tim.hÖÐµÄÃ¶¾Ù¶¨Òå)
-// @param	  timn_chn		Ñ¡Ôñ¶¨Ê±Æ÷Í¨µÀ(¿ÉÑ¡ÓÃµÄÍ¨µÀ²Î¿¼ml_pwm.hÖÐµÄÃ¶¾Ù¶¨Òå)
-// @param	  fre		¶¨ÒåÆµÂÊ£¨ÆµÂÊÒª´óÓÚ15£©
-// @return		void  
-// Sample usage:	pwm_init(TIM_2,TIM2_CH1,50);     
+// @brief		PWMåˆå§‹åŒ–
+// @param	  timn		é€‰æ‹©å®šæ—¶å™¨(å¯é€‰æ‹©çš„å®šæ—¶å™¨å‚è€ƒml_tim.hä¸­çš„æžšä¸¾å®šä¹‰)
+// @param	  timn_chn		é€‰æ‹©å®šæ—¶å™¨é€šé“(å¯é€‰æ‹©çš„é€šé“å‚è€ƒml_pwm.hä¸­çš„æžšä¸¾å®šä¹‰)
+// @param	  fre		è®¾ç½®é¢‘çŽ‡ï¼Œé¢‘çŽ‡éœ€è¦å¤§äºŽ15èµ«å…¹
+// @return		void
+// Sample usage:	pwm_init(TIM_2,TIM2_CH1,50);
 //-------------------------------------------------------------------------------------------------------------------
 void pwm_init(TIMn_enum timn,TIMn_CHn_enum timn_chn,int fre)
-{ 
+{
 	uint8_t ch = timn_chn%4+1;
 	RCC->APB1ENR |= 1<<timn;
-	tim_index[timn]->ARR = 1000000/fre-1; //×Ô¶¯ÖØ×°ÔØÖµ
-	tim_index[timn]->PSC = 72-1;       //Ô¤·ÖÆµÆ÷Öµ
+	tim_index[timn]->ARR = 1000000/fre-1; //è‡ªåŠ¨é‡è£…è½½å€¼
+	tim_index[timn]->PSC = 72-1;       //é¢„åˆ†é¢‘å€¼
   pwm_pin_init(timn_chn);
-	
+
 	switch(ch)
 	{
 	  case 1:
 		{
-			tim_index[timn]->CCMR1 |= 6<<4;	   //ÉèÖÃPWM1Ä£Ê½
-			tim_index[timn]->CCMR1 |= 1<<3;       //Ô¤×°ÔØÊ¹ÄÜ
-			tim_index[timn]->CCR1 = 0;            //³õÊ¼»¯CCRÖµÎªduty
+			tim_index[timn]->CCMR1 |= 6<<4;	   //è®¾ç½®PWM1æ¨¡å¼
+			tim_index[timn]->CCMR1 |= 1<<3;       //é¢„è£…è½½ä½¿èƒ½
+			tim_index[timn]->CCR1 = 0;            //åˆå§‹åŒ–CCRå€¼ä¸ºduty
 			break;
 		}
 		case 2:
 		{
-			tim_index[timn]->CCMR1 |= 6<<12;	   //ÉèÖÃPWM1Ä£Ê½	
-      tim_index[timn]->CCMR1 |= 1<<11;			 //Ô¤×°ÔØÊ¹ÄÜ
-			tim_index[timn]->CCR2 = 0;            //³õÊ¼»¯CCRÖµÎªduty
+			tim_index[timn]->CCMR1 |= 6<<12;	   //è®¾ç½®PWM1æ¨¡å¼
+      tim_index[timn]->CCMR1 |= 1<<11;			 //é¢„è£…è½½ä½¿èƒ½
+			tim_index[timn]->CCR2 = 0;            //åˆå§‹åŒ–CCRå€¼ä¸ºduty
 			break;
 		}
 		case 3:
 		{
-			tim_index[timn]->CCMR2 |= 6<<4;	   //ÉèÖÃPWM1Ä£Ê½
-      tim_index[timn]->CCMR2 |= 1<<3;			 //Ô¤×°ÔØÊ¹ÄÜ
-			tim_index[timn]->CCR3 = 0;            //³õÊ¼»¯CCRÖµÎªduty
-			break;		
+			tim_index[timn]->CCMR2 |= 6<<4;	   //è®¾ç½®PWM1æ¨¡å¼
+      tim_index[timn]->CCMR2 |= 1<<3;			 //é¢„è£…è½½ä½¿èƒ½
+			tim_index[timn]->CCR3 = 0;            //åˆå§‹åŒ–CCRå€¼ä¸ºduty
+			break;
 		}
 		case 4:
 		{
-			tim_index[timn]->CCMR2 |= 6<<12;	   //ÉèÖÃPWM1Ä£Ê½		
-      tim_index[timn]->CCMR2 |= 1<<11;			 //Ô¤×°ÔØÊ¹ÄÜ
-			tim_index[timn]->CCR4 = 0;            //³õÊ¼»¯CCRÖµÎªduty
-			break;				
+			tim_index[timn]->CCMR2 |= 6<<12;	   //è®¾ç½®PWM1æ¨¡å¼
+      tim_index[timn]->CCMR2 |= 1<<11;			 //é¢„è£…è½½ä½¿èƒ½
+			tim_index[timn]->CCR4 = 0;            //åˆå§‹åŒ–CCRå€¼ä¸ºduty
+			break;
 		}
-	
+
 	}
-	tim_index[timn]->CCER |= 0x01<<(4*(ch-1)); //PWMÊä³öÊ¹ÄÜ
-	tim_index[timn]->CR1 |= 0x81;        //Ê¹ÄÜ¼ÆÊýÆ÷ºÍARPE
+	tim_index[timn]->CCER |= 0x01<<(4*(ch-1)); //PWMè¾“å‡ºä½¿èƒ½
+	tim_index[timn]->CR1 |= 0x81;        //ä½¿èƒ½è®¡æ•°å™¨å’Œä¸­æ–­ARR
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// @brief		PWMÕ¼¿Õ±È¸üÐÂ
-// @param	  timn		Ñ¡Ôñ¶¨Ê±Æ÷(¿ÉÑ¡ÓÃµÄ¶¨Ê±Æ÷²Î¿¼ml_tim.hÖÐµÄÃ¶¾Ù¶¨Òå)
-// @param	  timn_chn		Ñ¡Ôñ¶¨Ê±Æ÷Í¨µÀ(¿ÉÑ¡ÓÃµÄÍ¨µÀ²Î¿¼ml_pwm.hÖÐµÄÃ¶¾Ù¶¨Òå)
-// @param	  duty    ¸üÐÂ¹¦ÂÊ
-// @return		void  
-// Sample usage:	pwm_update(TIM_2,TIM2_CH1,0);     
+// @brief		PWMå ç©ºæ¯”æ›´æ–°
+// @param	  timn		é€‰æ‹©å®šæ—¶å™¨(å¯é€‰æ‹©çš„å®šæ—¶å™¨å‚è€ƒml_tim.hä¸­çš„æžšä¸¾å®šä¹‰)
+// @param	  timn_chn		é€‰æ‹©å®šæ—¶å™¨é€šé“(å¯é€‰æ‹©çš„é€šé“å‚è€ƒml_pwm.hä¸­çš„æžšä¸¾å®šä¹‰)
+// @param	  duty    æ–°çš„å ç©ºæ¯”
+// @return		void
+// Sample usage:	pwm_update(TIM_2,TIM2_CH1,0);
 //-------------------------------------------------------------------------------------------------------------------
 void pwm_update(TIMn_enum timn,TIMn_CHn_enum timn_chn,uint16_t duty)
 {
 	uint8_t ch = timn_chn%4+1;
 	if(duty>=MAX_DUTY)
 		duty=MAX_DUTY;
-	uint16_t temp = tim_index[timn]->ARR;   //¶ÁÈ¡ARR
+	uint16_t temp = tim_index[timn]->ARR;   //èŽ·å–ARR
 	switch(ch)
 	{
 		case 1:
-			tim_index[timn]->CCR1 = (uint16_t)((float)duty/MAX_DUTY*(temp+1));               //¸üÐÂCCRÖµÎªduty
+			tim_index[timn]->CCR1 = (uint16_t)((float)duty/MAX_DUTY*(temp+1));               //æ›´æ–°CCRå€¼ä¸ºduty
 			break;
-		case 2:	
-			tim_index[timn]->CCR2 = (uint16_t)((float)duty/MAX_DUTY*(temp+1));               //¸üÐÂCCRÖµÎªduty
+		case 2:
+			tim_index[timn]->CCR2 = (uint16_t)((float)duty/MAX_DUTY*(temp+1));               //æ›´æ–°CCRå€¼ä¸ºduty
 			break;
-		case 3:	
-			tim_index[timn]->CCR3 = (uint16_t)((float)duty/MAX_DUTY*(temp+1));               //¸üÐÂCCRÖµÎªduty
-			break;		
+		case 3:
+			tim_index[timn]->CCR3 = (uint16_t)((float)duty/MAX_DUTY*(temp+1));               //æ›´æ–°CCRå€¼ä¸ºduty
+			break;
 		case 4:
-			tim_index[timn]->CCR4 = (uint16_t)((float)duty/MAX_DUTY*(temp+1));               //¸üÐÂCCRÖµÎªduty
-			break;					
+			tim_index[timn]->CCR4 = (uint16_t)((float)duty/MAX_DUTY*(temp+1));               //æ›´æ–°CCRå€¼ä¸ºduty
+			break;
 	}
 }
 

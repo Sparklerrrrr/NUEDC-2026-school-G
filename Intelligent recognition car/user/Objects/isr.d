@@ -7,7 +7,6 @@
 .\objects\isr.o: E:\Keil5\ARM\ARMCC\Bin\..\include\stdio.h
 .\objects\isr.o: E:\Keil5\ARM\ARMCC\Bin\..\include\string.h
 .\objects\isr.o: E:\Keil5\ARM\ARMCC\Bin\..\include\math.h
-.\objects\isr.o: E:\Keil5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\objects\isr.o: ..\ml_libs\ml_uart.h
 .\objects\isr.o: ..\ml_libs\headfile.h
 .\objects\isr.o: ..\ml_libs\ml_tim.h
@@ -25,4 +24,4 @@
 .\objects\isr.o: ..\code\pid.h
 .\objects\isr.o: ..\code\gray_track.h
 .\objects\isr.o: ..\code\filter.h
-.\objects\isr.o: ..\code\buzzer.h
+.\objects\isr.o: ..\code\tuner_bridge.h

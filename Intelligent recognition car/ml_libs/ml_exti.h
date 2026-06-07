@@ -33,8 +33,8 @@ typedef enum
 
 typedef enum
 {
-	RISING,       //ÉÏÉıÑØ´¥·¢
-	FALLING,      //ÏÂ½µÑØ´¥·¢
+	RISING,       //ä¸Šå‡æ²¿è§¦å‘
+	FALLING,      //ä¸‹é™æ²¿è§¦å‘
 }EXTI_Trigger_enum;
 
 void exti_init(EXTI_Pnx_enum pin,EXTI_Trigger_enum trigger,uint8_t priority);

@@ -3,10 +3,10 @@
 ADC_TypeDef *adc_index[3] = {ADC1,ADC2};
 
 //-------------------------------------------------------------------------------------------------------------------
-// @brief		ADC“˝Ω≈≥ı ºªØ
-// @param	  adc_channel		—°‘ÒADCÕ®µ¿
+// @brief		ADCÂºïËÑöÂàùÂßãÂåñ
+// @param	  adc_channel		ÈÄâÊã©ADCÈÄöÈÅì
 // @return		void  
-// Sample usage:	adc_pin_init(adc_channel);  ƒ⁄≤øµ˜”√ Œﬁ–Ë ÷∂Øµ˜”√
+// Sample usage:	adc_pin_init(adc_channel);  ÂÜÖÈÉ®Ë∞ÉÁî® Êó†ÈúÄÊâãÂä®Ë∞ÉÁî®
 //-------------------------------------------------------------------------------------------------------------------
 void adc_pin_init(ADCINx_enum adc_channel)
 {
@@ -33,9 +33,9 @@ void adc_pin_init(ADCINx_enum adc_channel)
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// @brief		ADC≥ı ºªØ
-// @param	  adc		  —°‘ÒADC
-// @param	  adc_channel		—°‘ÒADCÕ®µ¿
+// @brief		ADCÂàùÂßãÂåñ
+// @param	  adc		  ÈÄâÊã©ADC
+// @param	  adc_channel		ÈÄâÊã©ADCÈÄöÈÅì
 // @return		void  
 // Sample usage:	adc_init(ADC_1,ADC_Channel_1);
 //-------------------------------------------------------------------------------------------------------------------
@@ -43,26 +43,26 @@ void adc_init(ADCx_enum adc,ADCINx_enum adc_channel)
 {
 	adc_pin_init(adc_channel);
 	
-	RCC->APB2ENR |= 1<<(9+adc); // πƒ‹adc1 ±÷”
-	RCC->APB2RSTR|= 1<<(9+adc); // ±÷”∏¥Œª
-	RCC->APB2RSTR&= ~(1<<(9+adc));//Ω· ¯∏¥Œª
+	RCC->APB2ENR |= 1<<(9+adc); //‰ΩøËÉΩadc1Êó∂Èíü
+	RCC->APB2RSTR|= 1<<(9+adc); //Êó∂ÈíüÂ§ç‰Ωç
+	RCC->APB2RSTR&= ~(1<<(9+adc));//ÁªìÊùüÂ§ç‰Ωç
 	
-	RCC->CFGR &= ~(3<<14); //∑÷∆µ“Ú◊”«Â¡„
-	RCC->CFGR |= 1<<15;  //6∑÷∆µ adc∆µ¬ Œ™72/6=12MHZ
+	RCC->CFGR &= ~(3<<14); //ÂàÜÈ¢ëÂõ†Â≠êÊ∏ÖÈõ∂
+	RCC->CFGR |= 1<<15;  //6ÂàÜÈ¢ë adcÈ¢ëÁéá‰∏∫72/6=12MHZ
 	
-	adc_index[adc]->CR1 &= ~(0x0f<<16);  //adcπ§◊˜ƒ£ Ω«Â¡„ ƒ¨»œ∂¿¡¢ƒ£ Ω
-	adc_index[adc]->CR1 &= ~(1<<8);  //∑«…®√Ëƒ£ Ω
-	adc_index[adc]->CR2 &= ~(1<<1);  //µ•¥Œ◊™ªªƒ£ Ω
+	adc_index[adc]->CR1 &= ~(0x0f<<16);  //adcÂ∑•‰ΩúÊ®°ÂºèÊ∏ÖÈõ∂ ÈªòËÆ§Áã¨Á´ãÊ®°Âºè
+	adc_index[adc]->CR1 &= ~(1<<8);  //ÈùûÊâ´ÊèèÊ®°Âºè
+	adc_index[adc]->CR2 &= ~(1<<1);  //ÂçïÊ¨°ËΩ¨Êç¢Ê®°Âºè
 	
-	adc_index[adc]->CR2 &= ~(7<<17); //∆Ù∂ØπÊ‘ÚÕ®µ¿◊È◊™ªªŒª«Â¡„
-	adc_index[adc]->CR2 |= 7<<17; //»Ìº˛¥•∑¢(SWSTART)
-	adc_index[adc]->CR2 |= 1<<20; //ø™∆ÙÕ‚≤ø»Ìº˛¥•∑¢
+	adc_index[adc]->CR2 &= ~(7<<17); //ÂêØÂä®ËßÑÂàôÈÄöÈÅìÁªÑËΩ¨Êç¢‰ΩçÊ∏ÖÈõ∂
+	adc_index[adc]->CR2 |= 7<<17; //ËΩØ‰ª∂Ëß¶Âèë(SWSTART)
+	adc_index[adc]->CR2 |= 1<<20; //ÂºÄÂêØÂ§ñÈÉ®ËΩØ‰ª∂Ëß¶Âèë
 	
-	adc_index[adc]->CR2 &= ~(1<<11); // ˝æ›”“∂‘∆Î
+	adc_index[adc]->CR2 &= ~(1<<11); //Êï∞ÊçÆÂè≥ÂØπÈΩê
 	
-	adc_index[adc]->SQR1 &= 0xff0fffff; //÷ªø™Õ®“ª∏ˆ◊™ªªÕ®µ¿
+	adc_index[adc]->SQR1 &= 0xff0fffff; //Âè™ÂºÄÈÄö‰∏Ä‰∏™ËΩ¨Êç¢ÈÄöÈÅì
 	
-	if(adc_channel>=10)     //…Ë÷√≤…—˘ ±º‰
+	if(adc_channel>=10)     //ËÆæÁΩÆÈááÊ†∑Êó∂Èó¥
 	{
 		adc_index[adc]->SMPR1 &= ~(7<<(3*(adc_channel-10)));
 		adc_index[adc]->SMPR1 |= 7<<(3*(adc_channel-10));
@@ -73,27 +73,27 @@ void adc_init(ADCx_enum adc,ADCINx_enum adc_channel)
 		adc_index[adc]->SMPR2 |= 7<<(3*adc_channel);
 	}
 	
-	adc_index[adc]->CR2 |= 1<<0;  //ø™∆ÙADC◊™ªª∆˜
+	adc_index[adc]->CR2 |= 1<<0;  //ÂºÄÂêØADCËΩ¨Êç¢Âô®
 	
-	adc_index[adc]->CR2 |= 1<<3; // πƒ‹∏¥Œª–£◊º
-	while(adc_index[adc]->CR2&(1<<3));//µ»¥˝–£◊ºΩ· ¯
-	adc_index[adc]->CR2 |= 1<<2;  //ø™∆ÙAD–£◊º
-	while(adc_index[adc]->CR2&(1<<2)); //µ»¥˝–£◊ºΩ· ¯
+	adc_index[adc]->CR2 |= 1<<3; //‰ΩøËÉΩÂ§ç‰ΩçÊ†°ÂáÜ
+	while(adc_index[adc]->CR2&(1<<3));//Á≠âÂæÖÊ†°ÂáÜÁªìÊùü
+	adc_index[adc]->CR2 |= 1<<2;  //ÂºÄÂêØADÊ†°ÂáÜ
+	while(adc_index[adc]->CR2&(1<<2)); //Á≠âÂæÖÊ†°ÂáÜÁªìÊùü
 	
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// @brief		∂¡»°ADC◊™ªª÷µ
-// @param	  adc		  —°‘ÒADC
-// @param	  adc_channel		—°‘ÒADCÕ®µ¿
+// @brief		ËØªÂèñADCËΩ¨Êç¢ÂÄº
+// @param	  adc		  ÈÄâÊã©ADC
+// @param	  adc_channel		ÈÄâÊã©ADCÈÄöÈÅì
 // @return		uint16_t
 // Sample usage:	uint16_t value = adc_get(ADC_1,ADC_Channel_1);
 //-------------------------------------------------------------------------------------------------------------------
 uint16_t adc_get(ADCx_enum adc,ADCINx_enum adc_channel)
 {
-	adc_index[adc]->SQR3 = adc_channel;  //—°‘ÒÕ®µ¿
-	adc_index[adc]->CR2 |= 1<<22; //ø™ º◊™ªªπÊ‘ÚÕ®µ¿
-	while(!(adc_index[adc]->SR&(1<<1)));  //µ»¥˝◊™ªªΩ· ¯
+	adc_index[adc]->SQR3 = adc_channel;  //ÈÄâÊã©ÈÄöÈÅì
+	adc_index[adc]->CR2 |= 1<<22; //ÂºÄÂßãËΩ¨Êç¢ËßÑÂàôÈÄöÈÅì
+	while(!(adc_index[adc]->SR&(1<<1)));  //Á≠âÂæÖËΩ¨Êç¢ÁªìÊùü
 	
-	return adc_index[adc]->DR;    //∑µªÿAD◊™ªª÷µ
+	return adc_index[adc]->DR;    //ËøîÂõûADËΩ¨Êç¢ÂÄº
 }

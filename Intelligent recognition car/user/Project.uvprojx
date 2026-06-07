@@ -436,19 +436,14 @@
               <FilePath>..\code\filter.h</FilePath>
             </File>
             <File>
-              <FileName>buzzer.c</FileName>
+              <FileName>tuner_bridge.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\code\buzzer.c</FilePath>
+              <FilePath>..\code\tuner_bridge.c</FilePath>
             </File>
             <File>
-              <FileName>buzzer.h</FileName>
+              <FileName>tuner_bridge.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\code\buzzer.h</FilePath>
-            </File>
-            <File>
-              <FileName>readme.txt</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\code\readme.txt</FilePath>
+              <FilePath>..\code\tuner_bridge.h</FilePath>
             </File>
           </Files>
         </Group>

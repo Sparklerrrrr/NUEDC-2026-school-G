@@ -9,7 +9,6 @@
 .\objects\ml_hmc5883l.o: E:\Keil5\ARM\ARMCC\Bin\..\include\stdio.h
 .\objects\ml_hmc5883l.o: E:\Keil5\ARM\ARMCC\Bin\..\include\string.h
 .\objects\ml_hmc5883l.o: E:\Keil5\ARM\ARMCC\Bin\..\include\math.h
-.\objects\ml_hmc5883l.o: E:\Keil5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\objects\ml_hmc5883l.o: ..\ml_libs\ml_uart.h
 .\objects\ml_hmc5883l.o: ..\ml_libs\headfile.h
 .\objects\ml_hmc5883l.o: ..\ml_libs\ml_tim.h
@@ -27,4 +26,4 @@
 .\objects\ml_hmc5883l.o: ..\code\pid.h
 .\objects\ml_hmc5883l.o: ..\code\gray_track.h
 .\objects\ml_hmc5883l.o: ..\code\filter.h
-.\objects\ml_hmc5883l.o: ..\code\buzzer.h
+.\objects\ml_hmc5883l.o: ..\code\tuner_bridge.h

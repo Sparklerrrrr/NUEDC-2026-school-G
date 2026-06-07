@@ -1,17 +1,17 @@
 #include "headfile.h"
 
 //-------------------------------------------------------
-//ÒÔÏÂ´úÂëÓÃÓÚÅäÖÃÖĞ¶Ï ÒÑÔÚº¯Êı¿âÖĞÄÚ²¿µ÷ÓÃ ÓÃ»§ÎŞĞè¹ØĞÄ
+//ä»¥ä¸‹ä»£ç ç”¨äºé…ç½®ä¸­æ–­ å·²åœ¨å‡½æ•°åº“ä¸­å†…éƒ¨è°ƒç”¨ ç”¨æˆ·æ— éœ€å…³å¿ƒ
 //-------------------------------------------------------
 
 void NVIC_Group_Config(uint8_t group)
 {
 	uint32_t temp,temp1;
-	temp1 = ((~group)&0x07)<<8; //ÉèÖÃAIRCRÖĞ8~10Î»µÄÖµ ´ú±í5¸öÓÅÏÈ¼¶·Ö×é
-	temp = SCB->AIRCR;          //¶ÁÈ¡Ô­Öµ
-	temp &= 0x0000F8FF;         //ÃÜ³×Î»ºÍ·Ö×éÎ»Çå¿Õ ÆäÓàÎ»±£Áô
-	temp |= temp1;              //ÖØĞÂĞ´Èë·Ö×éÎ»
-	temp |= 0x05FA0000;         //Ğ´ÈëÃÜ³×
+	temp1 = ((~group)&0x07)<<8; //è®¾ç½®AIRCRä¸­8~10ä½çš„å€¼ ä»£è¡¨5ä¸ªä¼˜å…ˆçº§åˆ†ç»„
+	temp = SCB->AIRCR;          //è¯»å–åŸå€¼
+	temp &= 0x0000F8FF;         //å¯†åŒ™ä½å’Œåˆ†ç»„ä½æ¸…ç©º å…¶ä½™ä½ä¿ç•™
+	temp |= temp1;              //é‡æ–°å†™å…¥åˆ†ç»„ä½
+	temp |= 0x05FA0000;         //å†™å…¥å¯†åŒ™
 	SCB->AIRCR = temp;
 }
 
@@ -19,10 +19,10 @@ void NVIC_init(uint8_t PreemptionPriority,uint8_t nvic_channel)
 {
 	uint8_t temp;
 	
-	NVIC_Group_Config(4);                                  //Ä¬ÈÏÑ¡Ôñ·Ö×é4:4Î»ÇÀÕ¼ÓÅÏÈ¼¶+0Î»×ÓÓÅÏÈ¼¶
-	temp = NVIC->IP[nvic_channel]&0x01;                    //Çå¿ÕÖĞ¶ÏÓÅÏÈ¼¶ÉèÖÃ¼Ä´æÆ÷ÖĞ¸ßËÄÎ»
-	NVIC->IP[nvic_channel] = temp|(PreemptionPriority<<4); //Ğ´ÈëÇÀÕ¼ÓÅÏÈ¼¶
+	NVIC_Group_Config(4);                                  //é»˜è®¤é€‰æ‹©åˆ†ç»„4:4ä½æŠ¢å ä¼˜å…ˆçº§+0ä½å­ä¼˜å…ˆçº§
+	temp = NVIC->IP[nvic_channel]&0x01;                    //æ¸…ç©ºä¸­æ–­ä¼˜å…ˆçº§è®¾ç½®å¯„å­˜å™¨ä¸­é«˜å››ä½
+	NVIC->IP[nvic_channel] = temp|(PreemptionPriority<<4); //å†™å…¥æŠ¢å ä¼˜å…ˆçº§
 	
-	NVIC->ISER[nvic_channel/32] = 1<<nvic_channel%32;      //ÖĞ¶ÏÊ¹ÄÜ
+	NVIC->ISER[nvic_channel/32] = 1<<nvic_channel%32;      //ä¸­æ–­ä½¿èƒ½
 	
 }

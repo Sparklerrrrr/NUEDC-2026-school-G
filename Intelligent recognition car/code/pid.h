@@ -2,63 +2,36 @@
 #define __PID_h_
 #include "headfile.h"
 
+// PID 工作模式枚举
 enum
 {
-	POSITION_PID = 0,
-	DELTA_PID,
+	POSITION_PID = 0,  // 位置式 PID
+	DELTA_PID,         // 增量式 PID（默认，适合电机速度控制）
 };
 
+// PID 控制器结构体
 typedef struct
 {
-	float target;
-	float now;
-	float error[3];
-	float p, i, d;
-	float pout, dout, iout;
-	float out;
+	float target;       // 目标值（设定速度）
+	float now;          // 当前测量值（实际速度）
+	float error[3];     // 偏差历史：error[0]=e(k), [1]=e(k-1), [2]=e(k-2)
+	float p, i, d;      // PID 三个增益参数
+	float pout, dout, iout;  // P/I/D 各项输出分量
+	float out;          // PID 总输出（PWM 占空比）
 
-	uint32_t pid_mode;
+	uint32_t pid_mode;  // 工作模式：POSITION_PID 或 DELTA_PID
 
 } pid_t;
-
-typedef enum
-{
-	MODE_IDLE = 0,
-	MODE_BASIC = 1,
-	MODE_MANUAL = 2,
-	MODE_VISION = 3
-} ControlMode;
 
 void pid_cal(pid_t *pid);
 void pid_control(void);
 void pid_init(pid_t *pid, uint32_t mode, float p, float i, float d);
 void motor_target_set(int spe1, int spe2);
 void pidout_limit(pid_t *pid);
-void set_current_mode(int mode);
-ControlMode get_current_mode(void);
 
 extern pid_t motorA;
 extern pid_t motorB;
-
-extern volatile float line_kp;
-extern volatile float line_kd;
-extern volatile ControlMode current_mode;
-extern volatile uint8_t use_pid_speed;
+extern pid_t angle;
+extern int total_distance;
 extern volatile uint32_t system_tick;
-extern volatile uint8_t lap_count;
-extern volatile float lap_distance;
-extern volatile uint32_t run_start_tick;
-
-extern volatile uint8_t poker_suit;
-extern volatile uint8_t poker_rank;
-extern volatile uint8_t poker_new_flag;
-
-#define TRACK_CIRCUMFERENCE_CM  314.0f
-#define LAPS_BASIC              2
-#define LAPS_VISION             1
-
-#define BASE_SPEED              80
-#define MIN_SPEED               30
-#define CURVE_DECEL_FACTOR      5
-
 #endif

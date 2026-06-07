@@ -1,152 +1,114 @@
-#include "stm32f10x.h"
+#include "stm32f10x.h"                  // Device header
 #include "headfile.h"
 
-#define DEFAULT_SPEED 50
+// ==================== 定时器中断 ====================
 
-#define UART_STATE_WAIT  0
-#define UART_STATE_POKER_SUIT 1
-#define UART_STATE_POKER_RANK 2
-
-static volatile uint8_t uart_rx_state = UART_STATE_WAIT;
-
+// TIM2: 预留（未使用）
 void TIM2_IRQHandler(void)
 {
-	if(TIM2->SR & 1)
+	if (TIM2->SR & 1)
 	{
 		TIM2->SR &= ~1;
 	}
 }
 
+// TIM3: 10ms 定时中断 — 驱动 PID 控制主循环
 void TIM3_IRQHandler(void)
 {
-	if(TIM3->SR & 1)
+	if (TIM3->SR & 1)
 	{
-		system_tick++;
-
+		// 每次中断执行一次 PID 计算与电机输出更新
 		pid_control();
-
-		if(buzzer_active && system_tick >= buzzer_end_tick)
-		{
-			buzzer_off();
-		}
 
 		TIM3->SR &= ~1;
 	}
 }
 
+// TIM4: 预留（未使用）
 void TIM4_IRQHandler(void)
 {
-	if(TIM4->SR & 1)
+	if (TIM4->SR & 1)
 	{
 		TIM4->SR &= ~1;
 	}
 }
 
+
+// ==================== 串口中断 ====================
+
+// USART1: 接收 LLM-PID-Tuner 调参命令
 void USART1_IRQHandler(void)
 {
-	if(USART1->SR & 0x20)
+	if (USART1->SR & 0x20)
 	{
+		extern uint8_t tuner_cmd_ready;
+		extern char    tuner_cmd_buf[80];
+		static uint8_t cmd_len = 0;
+
 		uint8_t data = USART1->DR;
 
-		switch(uart_rx_state)
+		// 换行/回车作为命令结束符
+		if (data == '\r' || data == '\n')
 		{
-			case UART_STATE_WAIT:
-				switch(data)
-				{
-					case 'W':
-						if(current_mode == MODE_VISION)
-							motor_target_set(DEFAULT_SPEED, DEFAULT_SPEED);
-						break;
-					case 'S':
-						if(current_mode == MODE_VISION)
-							motor_target_set(-DEFAULT_SPEED, -DEFAULT_SPEED);
-						break;
-					case 'A':
-						if(current_mode == MODE_VISION)
-							motor_target_set(-DEFAULT_SPEED, DEFAULT_SPEED);
-						break;
-					case 'D':
-						if(current_mode == MODE_VISION)
-							motor_target_set(DEFAULT_SPEED, -DEFAULT_SPEED);
-						break;
-					case 'X':
-						motor_target_set(0, 0);
-						break;
-					case 'E':
-						emergency_stop();
-						current_mode = MODE_IDLE;
-						break;
-					case '0':
-						set_current_mode(MODE_IDLE);
-						break;
-					case '1':
-						set_current_mode(MODE_BASIC);
-						break;
-					case '2':
-						set_current_mode(MODE_MANUAL);
-						break;
-					case '3':
-						set_current_mode(MODE_VISION);
-						break;
-					case 'P':
-						uart_rx_state = UART_STATE_POKER_SUIT;
-						break;
-				}
-				break;
-
-			case UART_STATE_POKER_SUIT:
-				poker_suit = data;
-				uart_rx_state = UART_STATE_POKER_RANK;
-				break;
-
-			case UART_STATE_POKER_RANK:
-				poker_rank = data;
-				poker_new_flag = 1;
-				uart_rx_state = UART_STATE_WAIT;
-				break;
+			if (cmd_len > 0)
+			{
+				tuner_cmd_buf[cmd_len] = '\0';
+				tuner_cmd_ready = 1;   // 通知主循环处理命令
+				cmd_len = 0;
+			}
+		}
+		else if (cmd_len < sizeof(tuner_cmd_buf) - 1)
+		{
+			tuner_cmd_buf[cmd_len++] = data;
 		}
 
 		USART1->SR &= ~0x20;
 	}
 }
 
+// USART2: 预留（未使用）
 void USART2_IRQHandler(void)
 {
-	if(USART2->SR & 0x20)
+	if (USART2->SR & 0x20)
 	{
 		USART2->SR &= ~0x20;
 	}
 }
 
+// USART3: 预留（未使用）
 void USART3_IRQHandler(void)
 {
-	if(USART3->SR & 0x20)
+	if (USART3->SR & 0x20)
 	{
 		USART3->SR &= ~0x20;
 	}
 }
 
-void EXTI0_IRQHandler(void)
+
+// ==================== 外部中断（编码器） ====================
+
+void EXTI0_IRQHandler(void) // PA0/PB0/PC0 — 预留
 {
-	if(EXTI->PR & (1 << 0))
+	if (EXTI->PR & (1 << 0))
 	{
 		EXTI->PR = 1 << 0;
 	}
 }
 
-void EXTI1_IRQHandler(void)
+void EXTI1_IRQHandler(void) // PA1/PB1/PC1 — 预留
 {
-	if(EXTI->PR & (1 << 1))
+	if (EXTI->PR & (1 << 1))
 	{
 		EXTI->PR = 1 << 1;
 	}
 }
 
+// EXTI2: 编码器A（PA2 下降沿），根据方向引脚 PA3 判定正反转
 void EXTI2_IRQHandler(void)
 {
-	if(EXTI->PR & (1 << 2))
+	if (EXTI->PR & (1 << 2))
 	{
-		if(gpio_get(GPIO_A, Pin_3))
+		if (gpio_get(GPIO_A, Pin_3))
 			Encoder_count1--;
 		else
 			Encoder_count1++;
@@ -155,19 +117,21 @@ void EXTI2_IRQHandler(void)
 	}
 }
 
+// EXTI3: 预留（未使用）
 void EXTI3_IRQHandler(void)
 {
-	if(EXTI->PR & (1 << 3))
+	if (EXTI->PR & (1 << 3))
 	{
 		EXTI->PR = 1 << 3;
 	}
 }
 
+// EXTI4: 编码器B（PA4 下降沿），根据方向引脚 PA5 判定正反转
 void EXTI4_IRQHandler(void)
 {
-	if(EXTI->PR & (1 << 4))
+	if (EXTI->PR & (1 << 4))
 	{
-		if(gpio_get(GPIO_A, Pin_5))
+		if (gpio_get(GPIO_A, Pin_5))
 			Encoder_count2++;
 		else
 			Encoder_count2--;
@@ -176,29 +140,53 @@ void EXTI4_IRQHandler(void)
 	}
 }
 
+// EXTI5~9: 共享中断线
 void EXTI9_5_IRQHandler(void)
 {
-	if(EXTI->PR & (1 << 5))
+	if (EXTI->PR & (1 << 5))   // EXTI5 — 预留
 	{
 		EXTI->PR = 1 << 5;
 	}
 
-	if(EXTI->PR & (1 << 6))
+	if (EXTI->PR & (1 << 6))   // EXTI6 — 预留
 	{
 		EXTI->PR = 1 << 6;
 	}
 
-	if(EXTI->PR & (1 << 7))
+	// EXTI7: MPU6050/HMC5883L 数据就绪 — IMU 传感器融合
+	if (EXTI->PR & (1 << 7))
 	{
+		// 读取原始传感器数据
+		MPU6050_GetData();
+		HMC5883L_GetData();
+
+		// 陀螺仪积分角度（角速度 / 16.4 * 采样周期 5ms）
+		roll_gyro += (float)gx / 16.4 * 0.005;
+		pitch_gyro += (float)gy / 16.4 * 0.005;
+		yaw_gyro += (float)gz / 16.4 * 0.005;
+
+		// 加速度计反算角度
+		roll_acc = atan((float)ay / az) * 57.296;
+		pitch_acc = -atan((float)ax / az) * 57.296;
+		yaw_acc = atan((float)ay / ax) * 57.296;
+
+		// 磁力计反算航向角
+		yaw_hmc = atan2((float)hmc_x, (float)hmc_y) * 57.296;
+
+		// 卡尔曼融合滤波：陀螺仪 + 加速度计/磁力计
+		roll_Kalman = Kalman_Filter(&KF_Roll, roll_acc, (float)gx / 16.4);
+		pitch_Kalman = Kalman_Filter(&KF_Pitch, pitch_acc, (float)gy / 16.4);
+		yaw_Kalman = Kalman_Filter(&KF_Yaw, yaw_hmc, (float)gz / 16.4);
+
 		EXTI->PR = 1 << 7;
 	}
 
-	if(EXTI->PR & (1 << 8))
+	if (EXTI->PR & (1 << 8))   // EXTI8 — 预留
 	{
 		EXTI->PR = 1 << 8;
 	}
 
-	if(EXTI->PR & (1 << 9))
+	if (EXTI->PR & (1 << 9))   // EXTI9 — 预留
 	{
 		EXTI->PR = 1 << 9;
 	}

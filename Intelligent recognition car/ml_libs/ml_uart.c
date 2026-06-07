@@ -1,35 +1,35 @@
 #include "headfile.h"
 
-#define PCLK1	36000000  //����USART1�⣬���മ�ڶ�����APB1�����ϣ�ʹ��PCLK1��Ƶ ʱ��Ƶ��Ϊ36MHZ
-#define PCLK2 72000000  //USART1����APB2�����ϣ�ʹ��PCLK2��Ƶ ʱ��Ƶ��Ϊ72MHZ 
+#define PCLK1	36000000  //除了USART1之外，其他串口挂载在APB1总线上，使用PCLK1时钟 时钟频率为36MHZ
+#define PCLK2 72000000  //USART1挂载在APB2总线上，使用PCLK2时钟 时钟频率为72MHZ 
 
 USART_TypeDef *uart_index[3] = { USART1 , USART2 , USART3 };
 
 //-------------------------------------------------------------------------------------------------------------------
-//���´������Ӻ� ����ʹ��printf���� ��Ҫ��ʼ������UART_1
+//下面的代码用于支持使用printf函数 需要初始化串口UART_1
 #if 1
 #pragma import(__use_no_semihosting)             
-//��׼����Ҫ��֧�ֺ���                 
+//标准库需要的支持函数                
 struct __FILE 
-{ 
-	int handle; 
+{
+	int handle;
 	/* Whatever you require here. If the only file you are using is */ 
 	/* standard output using printf() for debugging, no file handling */ 
 	/* is required. */ 
-}; 
-/* FILE is typedef�� d in stdio.h. */ 
+};
+/* FILE is typedef�� d in stdio.h. */ 
 FILE __stdout;       
-//����_sys_exit()�Ա���ʹ�ð�����ģʽ    
+//定义_sys_exit()以避免使用半主机模式    
 void _sys_exit(int x) 
-{ 
-	x = x; 
-} 
-//�ض���fputc����
-//printf�������ָ��fputc����fputc���������
-//����ʹ�ô���1(USART1)���printf��Ϣ
+{
+	x = x;
+}
+//重定义fputc函数
+//printf函数会调用fputc函数，fputc函数在这里
+//实现使用串口1(USART1)发送printf信息
 int fputc(int ch, FILE *f)
 {
-	while((USART1->SR&0x40)==0);  //�ȴ��������
+	while((USART1->SR&0x40)==0);  //等待发送完成
 	USART1->DR = (uint8_t) ch;  
 	return ch;
 }
@@ -39,10 +39,10 @@ int fputc(int ch, FILE *f)
 
 
 //-------------------------------------------------------------------------------------------------------------------
-// @brief		�������ų�ʼ��
-// @param		uartn		ѡ�񴮿�
+// @brief		串口引脚初始化
+// @param		uartn		选择串口
 // @return		void  
-// Sample usage:		uart_pin_init(uartn);   �ڲ����� �����ֶ�����
+// Sample usage:		uart_pin_init(uartn);   内部使用 勿外部调用
 //-------------------------------------------------------------------------------------------------------------------
 void uart_pin_init(UARTn_enum uartn)
 {
@@ -65,11 +65,11 @@ void uart_pin_init(UARTn_enum uartn)
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// @brief		���ڲ����ʼ���
-// @param		uartn		ѡ�񴮿�
-// @param		baud		������
+// @brief		串口波特率配置
+// @param		uartn		选择串口
+// @param		baud		波特率
 // @return		void  
-// Sample usage:		uart_baud_config(uartn,baud);   �ڲ����� �����ֶ�����
+// Sample usage:		uart_baud_config(uartn,baud);   内部使用 勿外部调用
 //-------------------------------------------------------------------------------------------------------------------
 void uart_baud_config(UARTn_enum uartn,int baud)
 {
@@ -89,9 +89,9 @@ void uart_baud_config(UARTn_enum uartn,int baud)
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// @brief		�������ó�ʼ��
-// @param		uartn		ѡ�񴮿�
-// @param		baud		���ڲ�����
+// @brief		串口初始化
+// @param		uartn		选择串口
+// @param		baud		串口波特率
 // @return		void  
 // Sample usage:		uart_init(UART_1,9600,0x00);
 //-------------------------------------------------------------------------------------------------------------------
@@ -100,31 +100,31 @@ void uart_init(UARTn_enum uartn,int baud,uint8_t priority)
 	if(uartn == UART_1)
 		RCC->APB2ENR |= 1<<14;
 	else
-		RCC->APB1ENR |= 1<<(uartn+16);  //����ʱ��ʹ��
-	uart_pin_init(uartn);               //�������ų�ʼ��
+		RCC->APB1ENR |= 1<<(uartn+16);  //使能时钟使用
+	uart_pin_init(uartn);               //串口引脚初始化
 
-	uart_baud_config(uartn,baud);       //���ڲ���������
-	uart_index[uartn]->CR1 |= 0x202C;   //ʹ�ܴ��� ʹ�ܷ��ͽ��� ʹ�ܽ����ж�
-	NVIC_init(priority,uartn+37);       //�жϹ�������ʼ��
+	uart_baud_config(uartn,baud);       //串口波特率配置
+	uart_index[uartn]->CR1 |= 0x202C;   //使能接收 使能发送中断 使能接收中断
+	NVIC_init(priority,uartn+37);       //中断优先级初始化
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// @brief		���ڷ����ֽ�
-// @param		uartn		ѡ�񴮿�
-// @param		Byte    ���͵��ֽ�
+// @brief		串口发送字节
+// @param		uartn		选择串口
+// @param		Byte    发送的字节
 // @return		void  
 // Sample usage:		uart_sendbyte(UART_1,0x01);
 //-------------------------------------------------------------------------------------------------------------------
 void uart_sendbyte(UARTn_enum uartn,uint8_t Byte)  
 {
-	while((uart_index[uartn]->SR&0x40)==0);  //�ȴ��������
-	uart_index[uartn]->DR = Byte;        //���ݴ������ݼĴ���
+	while((uart_index[uartn]->SR&0x40)==0);  //等待发送完成
+	uart_index[uartn]->DR = Byte;        //数据发送到数据寄存器
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// @brief		���ڷ����ַ���
-// @param		uartn		ѡ�񴮿�
-// @param		str    ���͵��ַ���
+// @brief		串口发送字符串
+// @param		uartn		选择串口
+// @param		str    发送的字符串
 // @return		void  
 // Sample usage:		uart_sendstr(UART_1,"error");
 //-------------------------------------------------------------------------------------------------------------------
@@ -138,21 +138,16 @@ void uart_sendstr(UARTn_enum uartn, char* str)
 
 
 //-------------------------------------------------------------------------------------------------------------------
-// @brief		���ڽ����ֽ�(�ڴ����ж������)
-// @param		uartn		ѡ�񴮿�
-// @param		data    ���յ��ֽڴ洢��data����(��Ҫ�Լ�����һ��data����)
+// @brief		串口接收字节(在串口中断中调用)
+// @param		uartn		选择串口
+// @param		data    接收到的字节存储到data变量(需要自己定义一个data变量)
 // @return		void  
-// Sample usage:	uint8_t dat = uart_getbyte(UART_1);
+// Sample usage:		uint8_t dat = uart_getbyte(UART_1);
 //-------------------------------------------------------------------------------------------------------------------
 uint8_t uart_getbyte(UARTn_enum uartn)
 {
-	uint8_t data = uart_index[uartn]->DR;	   //�����ݼĴ����ж�ȡ����
+	if((uart_index[uartn]->SR & 0x20) == 0) // 检查接收是否完成
+		return 0;
+	uint8_t data = uart_index[uartn]->DR;   //从数据寄存器中读取数据
 	return data;
 }
-
-
-
-
-
-
-

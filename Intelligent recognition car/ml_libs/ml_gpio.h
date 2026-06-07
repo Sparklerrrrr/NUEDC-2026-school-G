@@ -7,7 +7,7 @@ typedef enum
 		GPIO_A = 0x00,
 	  GPIO_B = 0x01,
 	  GPIO_C = 0x02,
-}GPIOn_enum;    //IO¿ÚÃ¶¾ÙÀàĞÍ
+}GPIOn_enum;    //IOå£æšä¸¾ç±»å‹
 
 typedef enum
 {
@@ -31,14 +31,14 @@ typedef enum
 
 typedef enum
 {
-		OUT_PP   =  0x00,     //Ä¬ÈÏÍÆÍìÊä³ö
-	  AF_PP    =  0x03,     //¸´ÓÃÍÆÍìÊä³ö
-	  OUT_OD   =  0x02,     //¿ªÂ©Êä³ö
-		IU       =  0x01,   //ÉÏÀ­ÊäÈë
-	  ID       =  0x04, //ÏÂÀ­ÊäÈë
-	  IF       =  0x00,  //¸¡¿ÕÊäÈë
-	  AIN      =  0x1E,  //Ä£ÄâÊäÈë
-}GPIO_MODE_enum;  //¶¨ÒåIO¿ÚÄ£Ê½
+		OUT_PP   =  0x00,     //é»˜è®¤æ¨æŒ½è¾“å‡º
+	  AF_PP    =  0x03,     //å¤ç”¨æ¨æŒ½è¾“å‡º
+	  OUT_OD   =  0x02,     //å¼€æ¼è¾“å‡º
+		IU       =  0x01,   //ä¸Šæ‹‰è¾“å…¥
+	  ID       =  0x04, //ä¸‹æ‹‰è¾“å…¥
+	  IF       =  0x00,  //æµ®ç©ºè¾“å…¥
+	  AIN      =  0x1E,  //æ¨¡æ‹Ÿè¾“å…¥
+}GPIO_MODE_enum;  //å®šä¹‰IOå£æ¨¡å¼
 
 
 void gpio_init(GPIOn_enum GPIOn,Pinx_enum Pinx,GPIO_MODE_enum mode);

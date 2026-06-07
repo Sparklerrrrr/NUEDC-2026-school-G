@@ -18,7 +18,7 @@ typedef enum
 	  TIM4_CH2  =  0x09, // PB7
 	  TIM4_CH3  =  0x0a, // PB8
 	  TIM4_CH4  =  0x0b, // PB9
-}TIMn_CHn_enum;  //枚举定义定时器通道
+}TIMn_CHn_enum;  //鏋氫妇瀹氫箟瀹氭椂鍣ㄩ�氶亾
 
 void pwm_pin_init(TIMn_CHn_enum timn_chn);
 void pwm_init(TIMn_enum timn,TIMn_CHn_enum timn_chn,int fre);

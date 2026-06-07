@@ -38,12 +38,12 @@ uint8_t MPU6050_Read(uint8_t addr)
 
 void MPU6050_Init()
 {
-	MPU6050_Write(PWR_MGMT_1, 0x02);   // ʱ��Դ��PLL with Y axis gyroscope reference
-	MPU6050_Write(SMPLRT_DIV, 0x27);	 // ���ò���Ƶ��Ϊ200HZ
-	MPU6050_Write(CONFIG, 0x00);       // ʧ��DLPF
-	MPU6050_Write(GYRO_CONFIG, 0x18);	 // ����������   ����Ϊ2000
-	MPU6050_Write(ACCEL_CONFIG, 0x00); // ���ü��ٶȼ� ����Ϊ2g
-	MPU6050_Write(INT_ENABLE, 0x01);   // ʹ��INT���Ų����ж�
+	MPU6050_Write(PWR_MGMT_1, 0x02);   // 时钟源：PLL with Y axis gyroscope reference
+	MPU6050_Write(SMPLRT_DIV, 0x27);	 // 设置采样频率为200HZ
+	MPU6050_Write(CONFIG, 0x00);       // 失能DLPF
+	MPU6050_Write(GYRO_CONFIG, 0x18);	 // 配置陀螺仪   量程为2000
+	MPU6050_Write(ACCEL_CONFIG, 0x00); // 配置加速度计 量程为2g
+	MPU6050_Write(INT_ENABLE, 0x01);   // 使能INT引脚采样中断
 }
 
 

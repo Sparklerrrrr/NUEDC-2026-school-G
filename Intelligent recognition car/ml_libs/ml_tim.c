@@ -3,23 +3,23 @@
 TIM_TypeDef *tim_index[3] = { TIM2 , TIM3 , TIM4 };
 
 //-------------------------------------------------------------------------------------------------------------------
-// @brief		�ڲ���ʱ����ʼ��(ͬʱ��ʼ����ʱ���ж�)
-// @param	  timn		ѡ��ʱ��(��ѡ�õĶ�ʱ���ο�ml_tim.h�е�ö�ٶ���)
-// @param	  time_ms  ���붨ʱ���жϵļ��(ms)
-// @param	  priority �����ж����ȼ�(0~15 ԽС���ȼ�Խ��)
+// @brief		内部定时器初始化(同时初始化定时器中断)
+// @param	  timn		选择定时器(可选用的定时器参考ml_tim.h中的枚举定义)
+// @param	  time_ms  进入定时器中断的间隔(ms)
+// @param	  priority 设置中断优先级(0~15 越小优先级越高)
 // @return		void  
 // Sample usage:	tim_interrupt_ms_init(TIM_2,1000,0);
 //-------------------------------------------------------------------------------------------------------------------
 void tim_interrupt_ms_init(TIMn_enum timn,int time_ms,uint8_t priority)
 {	
-		RCC->APB1ENR |= 1<<timn;  //��ʱ��ʱ��ʹ��
+		RCC->APB1ENR |= 1<<timn;  //定时器时钟使能
 
-	  tim_index[timn]->ARR = 10*time_ms-1; //�Զ���װ��ֵ
-	  tim_index[timn]->PSC = 7200-1;       //Ԥ��Ƶ��ֵ
-	  tim_index[timn]->CR1 |= 0x01;        //ʹ�ܼ�����
-    tim_index[timn]->DIER |= 0x01;       //ʹ�ܶ�ʱ���ж�
+	  tim_index[timn]->ARR = 10*time_ms-1; //自动重装载值
+	  tim_index[timn]->PSC = 7200-1;       //预分频器值
+	  tim_index[timn]->CR1 |= 0x01;        //使能计数器
+    tim_index[timn]->DIER |= 0x01;       //使能定时器中断
 	  
-		NVIC_init(priority,timn+28);         //�жϹ�����ʼ��
+		NVIC_init(priority,timn+28);         //中断管理初始化
 
 }
 

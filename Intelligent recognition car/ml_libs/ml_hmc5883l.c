@@ -36,9 +36,9 @@ uint8_t HMC5883L_Read(uint8_t addr)
 
 void HMC5883L_Init()
 {
-	HMC5883L_Write(HMC5883L_CRA, 0xf8);  // ×î´óÊä³öËÙÂÊ£¨75HZ£©
-	HMC5883L_Write(HMC5883L_CRB, 0x20);  // Ä¬ÈÏÔöÒæ
-	HMC5883L_Write(HMC5883L_MR, 0x00);   // Á¬Ğø²âÁ¿
+	HMC5883L_Write(HMC5883L_CRA, 0xf8);  // æœ€å¤§è¾“å‡ºé€Ÿç‡ï¼ˆ75HZï¼‰
+	HMC5883L_Write(HMC5883L_CRB, 0x20);  // é»˜è®¤å¢ç›Š
+	HMC5883L_Write(HMC5883L_MR, 0x00);   // è¿ç»­æµ‹é‡
 }
 
 void HMC5883L_GetData()

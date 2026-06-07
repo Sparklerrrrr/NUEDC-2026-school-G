@@ -1,12 +1,11 @@
 #ifndef _headfile_h_
 #define _headfile_h_
 
-#include "stm32f10x.h"
+#include "stm32f10x.h"                  // Device header
 #include "stdint.h"
 #include "stdio.h"
 #include "string.h"
 #include "math.h"
-#include "stdlib.h"
 
 #include "ml_uart.h"
 #include "ml_tim.h"
@@ -25,6 +24,5 @@
 #include "pid.h"
 #include "gray_track.h"
 #include "filter.h"
-#include "buzzer.h"
-
+#include "tuner_bridge.h"
 #endif

@@ -8,7 +8,6 @@
 .\objects\motor.o: E:\Keil5\ARM\ARMCC\Bin\..\include\stdio.h
 .\objects\motor.o: E:\Keil5\ARM\ARMCC\Bin\..\include\string.h
 .\objects\motor.o: E:\Keil5\ARM\ARMCC\Bin\..\include\math.h
-.\objects\motor.o: E:\Keil5\ARM\ARMCC\Bin\..\include\stdlib.h
 .\objects\motor.o: ..\ml_libs\ml_uart.h
 .\objects\motor.o: ..\ml_libs\headfile.h
 .\objects\motor.o: ..\ml_libs\ml_tim.h
@@ -26,4 +25,4 @@
 .\objects\motor.o: ..\code\pid.h
 .\objects\motor.o: ..\code\gray_track.h
 .\objects\motor.o: ..\code\filter.h
-.\objects\motor.o: ..\code\buzzer.h
+.\objects\motor.o: ..\code\tuner_bridge.h

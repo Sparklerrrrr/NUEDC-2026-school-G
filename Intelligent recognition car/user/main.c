@@ -1,181 +1,198 @@
 #include "headfile.h"
 
-#define DISPLAY_PERIOD  10
+// 信号状态机：完赛提示（蜂鸣器+LED 闪烁两次）
+static uint8_t signal_state = 0;
+static uint16_t signal_tick = 0;
 
-static uint8_t display_counter = 0;
-static uint8_t last_poker_flag = 0;
-static char poker_display_buf[17];
-
-static volatile uint8_t led_blink_step = 0;
-static volatile uint32_t led_blink_next_tick = 0;
-
-static const char *suit_names[] = {"", "S", "H", "D", "C", "JK", "JK"};
-static const char *rank_names[] = {"", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
-
-static void led_blink_update(void)
+// 每 10ms 调用一次，驱动蜂鸣器/LED 的短-长-短闪烁序列
+static void signal_update(void)
 {
-	if(led_blink_step == 0)
-		return;
+	if (signal_state == 0) return;
 
-	if(system_tick < led_blink_next_tick)
-		return;
-
-	switch(led_blink_step)
+	signal_tick++;
+	switch (signal_state)
 	{
 		case 1:
-			led_off();
-			led_blink_next_tick = system_tick + 5;
-			led_blink_step = 2;
+			// 第一声短鸣（200ms）
+			buzzer_on(); led_on();
+			if (signal_tick >= 20) { signal_state = 2; signal_tick = 0; }
 			break;
 		case 2:
-			led_on();
-			led_blink_next_tick = system_tick + 20;
-			led_blink_step = 3;
+			// 间隔静音（100ms）
+			buzzer_off(); led_off();
+			if (signal_tick >= 10) { signal_state = 3; signal_tick = 0; }
 			break;
 		case 3:
-			led_off();
-			led_blink_step = 0;
+			// 第二声短鸣（200ms）
+			buzzer_on(); led_on();
+			if (signal_tick >= 20) { signal_state = 4; signal_tick = 0; }
+			break;
+		case 4:
+			// 结束闪烁，回到空闲
+			buzzer_off(); led_off();
+			signal_state = 0; signal_tick = 0;
 			break;
 	}
-}
-
-void check_lap(void)
-{
-	uint8_t target_laps;
-
-	if(current_mode != MODE_BASIC && current_mode != MODE_VISION)
-		return;
-
-	if(lap_distance >= TRACK_CIRCUMFERENCE_CM)
-	{
-		lap_count++;
-		lap_distance = 0;
-
-		buzzer_on();
-		buzzer_end_tick = system_tick + 50;
-
-		led_on();
-		led_blink_next_tick = system_tick + 20;
-		led_blink_step = 1;
-
-		if(current_mode == MODE_BASIC)
-			target_laps = LAPS_BASIC;
-		else
-			target_laps = LAPS_VISION;
-
-		if(lap_count >= target_laps)
-		{
-			motor_target_set(0, 0);
-			current_mode = MODE_IDLE;
-		}
-	}
-
-	led_blink_update();
-}
-
-void update_display(void)
-{
-	uint32_t elapsed_ms;
-	uint32_t seconds;
-	uint32_t minutes;
-
-	OLED_ShowString(1, 1, "M:");
-	switch(current_mode)
-	{
-		case MODE_IDLE:   OLED_ShowString(1, 3, "IDLE "); break;
-		case MODE_BASIC:  OLED_ShowString(1, 3, "BASIC"); break;
-		case MODE_MANUAL: OLED_ShowString(1, 3, "MAN  "); break;
-		case MODE_VISION: OLED_ShowString(1, 3, "VIS  "); break;
-	}
-	OLED_ShowString(1, 9, "L:");
-	OLED_ShowNum(1, 11, lap_count, 1);
-
-	elapsed_ms = (system_tick - run_start_tick) * 10;
-	minutes = elapsed_ms / 60000;
-	seconds = (elapsed_ms % 60000) / 1000;
-	OLED_ShowString(2, 1, "T:");
-	OLED_ShowNum(2, 3, minutes, 2);
-	OLED_ShowString(2, 5, ":");
-	OLED_ShowNum(2, 6, seconds, 2);
-
-	OLED_ShowString(2, 9, "D:");
-	OLED_ShowFloat(2, 11, total_distance, 3, 1);
-
-	OLED_ShowString(3, 1, "SPD:");
-	OLED_ShowNum(3, 5, speed_now, 3);
-
-	if(poker_new_flag && !last_poker_flag)
-	{
-		if(poker_suit <= 6 && poker_rank <= 13)
-		{
-			const char *s = suit_names[poker_suit];
-			const char *r = rank_names[poker_rank];
-			uint8_t idx = 0;
-			OLED_ShowString(4, 1, "P:");
-			while(s[idx]) idx++;
-			OLED_ShowString(4, 3, (char *)s);
-			OLED_ShowString(4, 3 + idx, (char *)r);
-		}
-	}
-	last_poker_flag = poker_new_flag;
-	poker_new_flag = 0;
 }
 
 int main(void)
 {
+	uint8_t lap_count = 0;      // 已完成圈数
+	uint8_t total_laps = 0;     // 用户选择的总圈数
+	int lap_start = 0;          // 本圈起始编码器值
+	uint32_t distance_cm = 0;   // 行驶距离（厘米）
+	uint32_t elapsed_ms = 0;    // 已用时间（毫秒）
+	uint32_t start_tick = 0;    // 发车时刻（system_tick）
+
+	OLED_Init();
+
+	// --- 硬件初始化 ---
 	motor_init();
 	encoder_init();
 	gray_init();
+	indicator_init();
+	key_init();
+
 	uart_init(UART_1, 115200, 0);
 
-	pid_init(&motorA, POSITION_PID, 500, 50, 100);
-	pid_init(&motorB, POSITION_PID, 500, 50, 100);
+	// 速度 PID 初始参数（增量式，P=14 I=14 D=7）
+	pid_init(&motorA, DELTA_PID, 14, 14, 7);
+	pid_init(&motorB, DELTA_PID, 14, 14, 7);
 
-	OLED_Init();
-	buzzer_init();
-	led_init();
-
+	// 10ms 定时中断，驱动 pid_control() 主循环
 	tim_interrupt_ms_init(TIM_3, 10, 0);
 
-	OLED_Clear();
-	OLED_ShowString(1, 1, "Smart Car");
+	uart_sendstr(UART_1, "Line Tracking Mode\r\n");
+
+	// --- 等待按键选择圈数 ---
+	OLED_ShowString(1, 1, "K1:1  K2:2");
 	OLED_ShowString(2, 1, "Waiting...");
 
-	while(current_mode == MODE_IDLE)
+	while (total_laps == 0)
 	{
-		led_toggle();
-		for(volatile int i = 0; i < 500000; i++);
+		if (key1_pressed())
+		{
+			total_laps = 1;
+			OLED_ShowString(1, 1, "1 Lap     ");
+			buzzer_on(); delay_ms(200); buzzer_off();
+		}
+		else if (key2_pressed())
+		{
+			total_laps = 2;
+			OLED_ShowString(1, 1, "2 Laps    ");
+			buzzer_on(); delay_ms(200); buzzer_off();
+			delay_ms(100);
+			buzzer_on(); delay_ms(200); buzzer_off();
+		}
 	}
 
-	OLED_Clear();
+	// 发车前短暂延迟，让车手放手
+	delay_ms(500);
 
-	while(1)
+	// 记录起始状态
+	lap_start = total_distance;
+	start_tick = system_tick;
+
+	// --- 主行驶循环 ---
+	while (1)
 	{
-		switch(current_mode)
+		// 跑完所有圈数 → 停车
+		if (lap_count >= total_laps)
 		{
-			case MODE_IDLE:
-				motor_target_set(0, 0);
-				break;
-
-			case MODE_BASIC:
-				track_pid();
-				check_lap();
-				break;
-
-			case MODE_MANUAL:
-				break;
-
-			case MODE_VISION:
-				track_pid();
-				check_lap();
-				break;
+			motor_target_set(0, 0);
+			uart_sendstr(UART_1, "Finished\r\n");
+			break;
 		}
 
-		display_counter++;
-		if(display_counter >= DISPLAY_PERIOD)
+		// 本圈剩余编码器步数
+		int remaining = LAP_ENCODER_TARGET - (total_distance - lap_start);
+
+		uint32_t elapsed_ticks = system_tick - start_tick;
+		if (elapsed_ticks < 120)
 		{
-			display_counter = 0;
-			update_display();
+			// 起步缓加速：前 1.2s 从 200 线性过渡到 TRACK_BASE_SPEED
+			int ramp_speed = 200 + (TRACK_BASE_SPEED - 200) * elapsed_ticks / 120;
+			track_with_speed(ramp_speed);
 		}
+		else if (lap_count == total_laps - 1 && remaining < 800 && remaining > 0)
+		{
+			// 最后一圈末端减速：最后 800 步线性减速到 40
+			int decel_speed = 40 + (TRACK_BASE_SPEED - 40) * remaining / 800;
+			track_with_speed(decel_speed);
+		}
+		else
+		{
+			// 正常匀速循迹
+			track();
+		}
+
+		// 过线检测：当前圈行驶距离达到目标
+		if (remaining <= 0)
+		{
+			lap_count++;
+			lap_start = total_distance;
+			signal_state = 1;   // 触发过线信号
+			signal_tick = 0;
+			uart_sendstr(UART_1, "Lap: ");
+			uart_sendbyte(UART_1, '0' + lap_count);
+			uart_sendstr(UART_1, "\r\n");
+		}
+
+		// LLM-PID-Tuner 通信（接收调参命令 + 发送 CSV 数据）
+		tuner_bridge_process_cmd();
+		tuner_bridge_send_csv();
+
+		// 更新过线提示状态机
+		signal_update();
+
+		// --- OLED 实时显示 ---
+		distance_cm = (uint32_t)total_distance * 1508 / 26000;
+		elapsed_ms = (system_tick - start_tick) * 10;
+
+		OLED_ShowString(1, 1, "Lap:");
+		OLED_ShowNum(1, 5, lap_count, 1);
+		OLED_ShowString(1, 7, "    ");
+
+		OLED_ShowString(2, 1, "D:");
+		OLED_ShowNum(2, 3, distance_cm / 100, 3);
+		OLED_ShowChar(2, 6, '.');
+		OLED_ShowNum(2, 7, distance_cm % 100, 2);
+		OLED_ShowString(2, 9, "m     ");
+
+		OLED_ShowString(3, 1, "T:");
+		OLED_ShowNum(3, 3, elapsed_ms / 1000, 3);
+		OLED_ShowChar(3, 6, '.');
+		OLED_ShowNum(3, 7, (elapsed_ms / 100) % 10, 1);
+		OLED_ShowString(3, 8, "s     ");
+
+		delay_ms(10);
+	}
+
+	// 完赛后短暂停顿
+	delay_ms(500);
+
+	// --- 显示最终成绩 ---
+	distance_cm = (uint32_t)total_distance * 1508 / 26000;
+	elapsed_ms = (system_tick - start_tick) * 10;
+
+	OLED_ShowString(1, 1, "Finished!   ");
+	OLED_ShowString(2, 1, "D:");
+	OLED_ShowNum(2, 3, distance_cm / 100, 3);
+	OLED_ShowChar(2, 6, '.');
+	OLED_ShowNum(2, 7, distance_cm % 100, 2);
+	OLED_ShowString(2, 9, "m     ");
+	OLED_ShowString(3, 1, "T:");
+	OLED_ShowNum(3, 3, elapsed_ms / 1000, 3);
+	OLED_ShowChar(3, 6, '.');
+	OLED_ShowNum(3, 7, (elapsed_ms / 100) % 10, 1);
+	OLED_ShowString(3, 8, "s     ");
+
+	// 完赛后 LED 不停闪烁
+	while (1)
+	{
+		led_on();
+		delay_ms(500);
+		led_off();
+		delay_ms(500);
 	}
 }

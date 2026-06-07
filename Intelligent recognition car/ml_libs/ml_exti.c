@@ -1,10 +1,10 @@
 #include "headfile.h"
 
 //-------------------------------------------------------------------------------------------------------------------
-// @brief		EXTIÒý½Å³õÊ¼»¯(Ä¬ÈÏÉÏÀ­)
-// @param	  pin	  Ñ¡ÔñÒý½Å
+// @brief		EXTIå¼•è„šåˆå§‹åŒ–(é»˜è®¤ä¸Šæ‹‰)
+// @param	  pin	  é€‰æ‹©å¼•è„š
 // @return		void  
-// Sample usage:		exti_pin_init(pin);  //ÄÚ²¿µ÷ÓÃ ÎÞÐè¹ØÐÄ
+// Sample usage:		exti_pin_init(pin);  //å†…éƒ¨è°ƒç”¨ æ— éœ€å…³å¿ƒ
 //-------------------------------------------------------------------------------------------------------------------
 void exti_pin_init(EXTI_Pnx_enum pin)
 {
@@ -38,10 +38,10 @@ void exti_pin_init(EXTI_Pnx_enum pin)
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// @brief		EXTI³õÊ¼»¯
-// @param	  pin	  Ñ¡ÔñÍâ²¿ÖÐ¶ÏÒý½Å
-// @param	  trigger    Ñ¡Ôñ´¥·¢·½Ê½(ÉÏÉýÑØ/ÏÂ½µÑØ)
-// @param	  priority   ÉèÖÃÖÐ¶ÏÓÅÏÈ¼¶(0~15)
+// @brief		EXTIåˆå§‹åŒ–
+// @param	  pin	  é€‰æ‹©å¤–éƒ¨ä¸­æ–­å¼•è„š
+// @param	  trigger    é€‰æ‹©è§¦å‘æ–¹å¼(ä¸Šå‡æ²¿/ä¸‹é™æ²¿)
+// @param	  priority   è®¾ç½®ä¸­æ–­ä¼˜å…ˆçº§(0~15)
 // @return		void  
 // Sample usage:		exti_init(EXTI_PA5,RISING,0);
 //-------------------------------------------------------------------------------------------------------------------
@@ -50,23 +50,23 @@ void exti_init(EXTI_Pnx_enum pin,EXTI_Trigger_enum trigger,uint8_t priority)
 	uint8_t tempoffs = ((pin/3)%4)*4;
 	uint8_t tempaddr = (pin/3)/4;
 	
-	exti_pin_init(pin);   //Òý½Å³õÊ¼»¯
+	exti_pin_init(pin);   //å¼•è„šåˆå§‹åŒ–
 	
-	RCC->APB2ENR |= 1<<0;  //Ê¹ÄÜAFIO
+	RCC->APB2ENR |= 1<<0;  //ä½¿èƒ½AFIO
 	
-	AFIO->EXTICR[tempaddr] &= ~(0x0f<<tempoffs);  //Íâ²¿ÖÐ¶ÏÅäÖÃÇåÁã
-	if(pin%3!=0)        //²»ÊÇPAÒý½Å
-		AFIO->EXTICR[tempaddr] |= (1<<(pin%3-1))<<tempoffs;  //Íâ²¿ÖÐ¶ÏÅäÖÃ
+	AFIO->EXTICR[tempaddr] &= ~(0x0f<<tempoffs);  //å¤–éƒ¨ä¸­æ–­é…ç½®æ¸…é›¶
+	if(pin%3!=0)        //ä¸æ˜¯PAå¼•è„š
+		AFIO->EXTICR[tempaddr] |= (1<<(pin%3-1))<<tempoffs;  //å¤–éƒ¨ä¸­æ–­é…ç½®
 	
-	EXTI->IMR |= 1<<(pin/3);  //¿ªÆôÖÐ¶Ï
+	EXTI->IMR |= 1<<(pin/3);  //å¼€å¯ä¸­æ–­
 	
 	if(trigger == RISING)
-		EXTI->RTSR |= 1<<(pin/3); //ÉÏÉýÑØ´¥·¢
+		EXTI->RTSR |= 1<<(pin/3); //ä¸Šå‡æ²¿è§¦å‘
 	else
-		EXTI->FTSR |= 1<<(pin/3); //ÏÂ½µÑØ´¥·¢
+		EXTI->FTSR |= 1<<(pin/3); //ä¸‹é™æ²¿è§¦å‘
 
 	if(pin/3<=4)
-		NVIC_init(priority,pin/3+6);   //ÅäÖÃÖÐ¶Ï
+		NVIC_init(priority,pin/3+6);   //é…ç½®ä¸­æ–­
 	else
 		NVIC_init(priority,EXTI9_5_IRQn);
 	

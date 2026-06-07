@@ -3,10 +3,10 @@
 GPIO_TypeDef *gpio_index[3] = { GPIOA , GPIOB , GPIOC };
 
 //-------------------------------------------------------------------------------------------------------------------
-// @brief		GPIO³õÊ¼»¯
-// @param	  GPIOn	  Ñ¡ÔñGPIO¶Ë¿Ú	
-// @param	  Pinx    Ñ¡ÔñÒý½ÅºÅ
-// @param	  mode    Ñ¡Ôñ¹¤×÷Ä£Ê½
+// @brief		GPIOåˆå§‹åŒ–
+// @param	  GPIOn	  é€‰æ‹©GPIOç«¯å£	
+// @param	  Pinx    é€‰æ‹©å¼•è„šå·
+// @param	  mode    é€‰æ‹©å·¥ä½œæ¨¡å¼
 // @return		void  
 // Sample usage:		gpio_init(GPIO_A,Pin_0,OUT_PP);
 //-------------------------------------------------------------------------------------------------------------------
@@ -14,42 +14,42 @@ void gpio_init(GPIOn_enum GPIOn,Pinx_enum Pinx,GPIO_MODE_enum mode)
 {
 	uint32_t temp;
 	
-	RCC->APB2ENR |= 4<<GPIOn;         //Ê¹ÄÜÊ±ÖÓ
+	RCC->APB2ENR |= 4<<GPIOn;         //ä½¿èƒ½æ—¶é’Ÿ
   
 	if(Pinx<8)
 	{
-			gpio_index[GPIOn]->CRL &= ~((0x0000000F)<<(Pinx*4));     //±£³Ö¼Ä´æÆ÷ÆäËûÎ»²»±ä ¶ÔÑ¡ÔñÎ»ÇåÁã
+			gpio_index[GPIOn]->CRL &= ~((0x0000000F)<<(Pinx*4));     //ä¿æŒå¯„å­˜å™¨å…¶ä»–ä½ä¸å˜ å¯¹é€‰æ‹©ä½æ¸…é›¶
 			if(mode == OUT_PP || mode == AF_PP || mode == OUT_OD)
-				gpio_index[GPIOn]->CRL |= ((0x00000003)|(1<<mode))<<(Pinx*4);        //ÍÆÍìÊä³ö(Ä¬ÈÏÊä³öµÍµçÆ½)
+				gpio_index[GPIOn]->CRL |= ((0x00000003)|(1<<mode))<<(Pinx*4);        //æŽ¨æŒ½è¾“å‡º(é»˜è®¤è¾“å‡ºä½Žç”µå¹³)
 			else if(mode == IU || mode == ID)
 			{
-				gpio_index[GPIOn]->CRL |= 0x00000008<<(Pinx*4);        //ÉÏÀ­/ÏÂÀ­
+				gpio_index[GPIOn]->CRL |= 0x00000008<<(Pinx*4);        //ä¸Šæ‹‰/ä¸‹æ‹‰
 				if(mode == IU)
 				{
-					temp = gpio_index[GPIOn]->ODR&(~(1<<Pinx));          //±£³ÖÆäËûÎ»²»±ä ¶ÔÑ¡ÔñÎ»ÇåÁã
-					gpio_index[GPIOn]->ODR = temp|(1<<Pinx);             //±£³ÖÆäËûÎ»²»±ä ¶ÔÑ¡ÔñÎ»ÖÃ1
+					temp = gpio_index[GPIOn]->ODR&(~(1<<Pinx));          //ä¿æŒå…¶ä»–ä½ä¸å˜ å¯¹é€‰æ‹©ä½æ¸…é›¶
+					gpio_index[GPIOn]->ODR = temp|(1<<Pinx);             //ä¿æŒå…¶ä»–ä½ä¸å˜ å¯¹é€‰æ‹©ä½ç½®1
 				}
 				if(mode == ID)
-					gpio_index[GPIOn]->ODR &= ~(1<<Pinx);                //±£³ÖÆäËûÎ»²»±ä ¶ÔÑ¡ÔñÎ»ÇåÁã
+					gpio_index[GPIOn]->ODR &= ~(1<<Pinx);                //ä¿æŒå…¶ä»–ä½ä¸å˜ å¯¹é€‰æ‹©ä½æ¸…é›¶
 			}
 			else
 				gpio_index[GPIOn]->CRL |= (0x00000004<<mode)<<(Pinx*4);								
 	}
 	else
   {
-			gpio_index[GPIOn]->CRH &= ~((0x0000000F)<<((Pinx-8)*4));     //±£³Ö¼Ä´æÆ÷ÆäËûÎ»²»±ä ¶ÔÑ¡ÔñÎ»ÇåÁã
+			gpio_index[GPIOn]->CRH &= ~((0x0000000F)<<((Pinx-8)*4));     //ä¿æŒå¯„å­˜å™¨å…¶ä»–ä½ä¸å˜ å¯¹é€‰æ‹©ä½æ¸…é›¶
 			if(mode == OUT_PP || mode == AF_PP || mode == OUT_OD)
-				gpio_index[GPIOn]->CRH |= ((0x00000003)|(1<<mode))<<((Pinx-8)*4);        //ÍÆÍìÊä³ö(Ä¬ÈÏÊä³öµÍµçÆ½)
+				gpio_index[GPIOn]->CRH |= ((0x00000003)|(1<<mode))<<((Pinx-8)*4);        //æŽ¨æŒ½è¾“å‡º(é»˜è®¤è¾“å‡ºä½Žç”µå¹³)
 			else if(mode == IU || mode == ID)
 			{
-				gpio_index[GPIOn]->CRH |= 0x00000008<<((Pinx-8)*4);        //ÉÏÀ­/ÏÂÀ­
+				gpio_index[GPIOn]->CRH |= 0x00000008<<((Pinx-8)*4);        //ä¸Šæ‹‰/ä¸‹æ‹‰
 				if(mode == IU)
 				{
-					temp = GPIOA->ODR&(~(1<<Pinx));          //±£³ÖÆäËûÎ»²»±ä ¶ÔÑ¡ÔñÎ»ÇåÁã
-					gpio_index[GPIOn]->ODR = temp|(1<<Pinx);             //±£³ÖÆäËûÎ»²»±ä ¶ÔÑ¡ÔñÎ»ÖÃ1
+					temp = GPIOA->ODR&(~(1<<Pinx));          //ä¿æŒå…¶ä»–ä½ä¸å˜ å¯¹é€‰æ‹©ä½æ¸…é›¶
+					gpio_index[GPIOn]->ODR = temp|(1<<Pinx);             //ä¿æŒå…¶ä»–ä½ä¸å˜ å¯¹é€‰æ‹©ä½ç½®1
 				}
 				if(mode == ID)
-					gpio_index[GPIOn]->ODR &= ~(1<<Pinx);                //±£³ÖÆäËûÎ»²»±ä ¶ÔÑ¡ÔñÎ»ÇåÁã
+					gpio_index[GPIOn]->ODR &= ~(1<<Pinx);                //ä¿æŒå…¶ä»–ä½ä¸å˜ å¯¹é€‰æ‹©ä½æ¸…é›¶
 			}
 			else
 				gpio_index[GPIOn]->CRH |= (0x00000004<<mode)<<((Pinx-8)*4);	
@@ -59,10 +59,10 @@ void gpio_init(GPIOn_enum GPIOn,Pinx_enum Pinx,GPIO_MODE_enum mode)
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// @brief		ÉèÖÃGPIOÊä³öµçÆ½
-// @param	  GPIOn	  Ñ¡ÔñGPIO¶Ë¿Ú	
-// @param	  Pinx    Ñ¡ÔñÒý½ÅºÅ
-// @param	  mode    ÖÃ1Îª¸ßµçÆ½ ÖÃ0ÎªµÍµçÆ½
+// @brief		è®¾ç½®GPIOè¾“å‡ºç”µå¹³
+// @param	  GPIOn	  é€‰æ‹©GPIOç«¯å£	
+// @param	  Pinx    é€‰æ‹©å¼•è„šå·
+// @param	  mode    ç½®1ä¸ºé«˜ç”µå¹³ ç½®0ä¸ºä½Žç”µå¹³
 // @return		void  
 // Sample usage:			gpio_set(GPIO_A,Pin_0,1);
 //-------------------------------------------------------------------------------------------------------------------
@@ -72,17 +72,17 @@ void gpio_set(GPIOn_enum GPIOn,Pinx_enum Pinx,uint8_t mode)
 	
 	if(mode)
 	{
-		temp = gpio_index[GPIOn]->ODR&(~(1<<Pinx));   //±£³ÖÆäËûÎ»²»±ä ¶ÔÑ¡ÔñÎ»ÇåÁã
-		gpio_index[GPIOn]->ODR = temp|(1<<Pinx);      //±£³ÖÆäËûÎ»²»±ä ¶ÔÑ¡ÔñÎ»ÖÃ1
+		temp = gpio_index[GPIOn]->ODR&(~(1<<Pinx));   //ä¿æŒå…¶ä»–ä½ä¸å˜ å¯¹é€‰æ‹©ä½æ¸…é›¶
+		gpio_index[GPIOn]->ODR = temp|(1<<Pinx);      //ä¿æŒå…¶ä»–ä½ä¸å˜ å¯¹é€‰æ‹©ä½ç½®1
 	}
 	else
-		gpio_index[GPIOn]->ODR &= ~(1<<Pinx);         //±£³ÖÆäËûÎ»²»±ä ¶ÔÑ¡ÔñÎ»ÇåÁã
+		gpio_index[GPIOn]->ODR &= ~(1<<Pinx);         //ä¿æŒå…¶ä»–ä½ä¸å˜ å¯¹é€‰æ‹©ä½æ¸…é›¶
 }
 
 //-------------------------------------------------------------------------------------------------------------------
-// @brief		¶ÁÈ¡GPIOÊäÈë
-// @param	  GPIOn	  Ñ¡ÔñGPIO¶Ë¿Ú	
-// @param	  Pinx    Ñ¡ÔñÒý½ÅºÅ
+// @brief		è¯»å–GPIOè¾“å…¥
+// @param	  GPIOn	  é€‰æ‹©GPIOç«¯å£	
+// @param	  Pinx    é€‰æ‹©å¼•è„šå·
 // @return		uint8_t  
 // Sample usage:			gpio_get(GPIO_A,Pin_4)
 //-------------------------------------------------------------------------------------------------------------------
@@ -90,10 +90,10 @@ uint8_t gpio_get(GPIOn_enum GPIOn,Pinx_enum Pinx)
 {
 	uint32_t temp;
 	
-	temp = gpio_index[GPIOn]->IDR&(1<<Pinx);   //ÆäËûÎ»È«²¿ÖÃ0 Ñ¡ÔñÎ»Îª1Ôòtemp²»Îª0 ·ñÔòtempÎª0
+	temp = gpio_index[GPIOn]->IDR&(1<<Pinx);   //å…¶ä»–ä½å…¨éƒ¨ç½®0 é€‰æ‹©ä½ä¸º1åˆ™tempä¸ä¸º0 å¦åˆ™tempä¸º0
 	
-	if(temp)                          //temp²»Îª0 ËµÃ÷Ñ¡ÔñÎ»Îª1 ¼´ÊäÈë¸ßµçÆ½
+	if(temp)                          //tempä¸ä¸º0 è¯´æ˜Žé€‰æ‹©ä½ä¸º1 å³è¾“å…¥é«˜ç”µå¹³
 		return 1;
-	else                              //tempÎª0 ËµÃ÷Ñ¡ÔñÎ»Îª0 ¼´ÊäÈëµÍµçÆ½
+	else                              //tempä¸º0 è¯´æ˜Žé€‰æ‹©ä½ä¸º0 å³è¾“å…¥ä½Žç”µå¹³
 		return 0;
 }
